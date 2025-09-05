@@ -1,3 +1,5 @@
+#URL for the week 1 Activity: https://68bb1d3c7ea7e5071aa37eb4--earnest-semifreddo-38aea6.netlify.app/
+
 # BYU-Pathway Worldwide Online
 ## WDD 330 - Web Frontend Development II
 
