@@ -241,6 +241,43 @@ button {
   grid-column: 3;
 }
 
+
+/*Add discount to product detail pages*/
+
+.price-block {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+}
+.price--sale {
+  font-weight: 700;
+  color: #b00020; 
+  font-size: 1.25rem;
+}
+.price--original {
+  text-decoration: line-through;
+  color: #6b7280; 
+}
+
+/* Badge discount */
+.discount-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  background: #ffe8e8;
+  color: #b00020;
+  border: 1px solid #ffc9c9;
+  border-radius: 999px;
+  padding: .25rem .6rem;
+  font-weight: 700;
+  margin-left: .5rem;
+  line-height: 1;
+}
+.discount-badge .pct { font-size: .9rem; }
+.discount-badge .save { font-size: .8rem; opacity: .9; }
+
+
+
 @media screen and (min-width: 500px) {
   body {
     max-width: 1080px;
@@ -260,4 +297,8 @@ button {
 footer {
   font-size: var(--small-font);
   padding: 1em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discount-badge { transition: none; }
 }

@@ -9,13 +9,21 @@ function convertToJson(res) {
 export default class ProductData {
   constructor(category) {
     this.category = category;
-    this.path = `../json/${this.category}.json`;
+    // change for the correct line and src
+    this.path = `/json/${this.category}.json`;
   }
+
   getData() {
     return fetch(this.path)
       .then(convertToJson)
-      .then((data) => data);
+      .then((data) => {
+        // 
+        if (Array.isArray(data)) return data;
+        if (data && Array.isArray(data[this.category])) return data[this.category];
+        throw new Error("Unexpected JSON format in " + this.path);
+      });
   }
+
   async findProductById(id) {
     const products = await this.getData();
     return products.find((item) => item.Id === id);

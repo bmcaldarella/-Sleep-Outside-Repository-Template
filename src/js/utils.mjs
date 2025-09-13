@@ -21,3 +21,18 @@ export function setClick(selector, callback) {
   });
   qs(selector).addEventListener("click", callback);
 }
+
+//new code added, it helps to render the lists using a template
+
+export function renderListWithTemplate(
+  templateFn,
+  parentElement,
+  list,
+  position = "afterbegin",
+  clear = false
+) {
+  if (!parentElement) throw new Error("Parent element is required");
+  if (clear) parentElement.textContent = "";
+  const htmlStrings = list.map(templateFn);
+  parentElement.insertAdjacentHTML(position, htmlStrings.join(""));
+}
