@@ -1,14 +1,12 @@
-// Carga un producto por id desde ?product=ID y lo pinta en la página
 import ProductData from "./ProductData.mjs";
 
 const dataSource = new ProductData("tents");
-
+const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 const qs = (sel, parent = document) => parent.querySelector(sel);
 const params = new URLSearchParams(location.search);
 const productId = params.get("product");
 const container = qs("#product-detail");
 
-// Sanitiza rutas de imagen por si tu JSON aún tiene ../images
 function fixImgPath(p) {
     if (!p) return p;
     if (p.startsWith("../images/")) return p.replace("../images/", "/images/");
@@ -17,32 +15,41 @@ function fixImgPath(p) {
 }
 
 function template(product) {
-    const name = product.Name ?? product.NameWithoutBrand ?? "Product";
-    const img = fixImgPath(product.Image);
-    const brand = product.Brand?.Name ?? "—";
-    const price = product.FinalPrice ?? product.ListPrice ?? product.Price;
-    const priceText = typeof price === "number" ? price.toFixed(2) : (price ?? "—");
-    const desc = product.DescriptionHtmlSimple ?? "";
-    const colorText = product.Colors?.map(c => c?.ColorName).filter(Boolean).join(", ") || "—";
+  const name  = product.Name ?? product.NameWithoutBrand ?? "Product";
+  const img   = fixImgPath(product.Image);
+  const brand = product.Brand?.Name ?? "—";
+  const desc  = product.DescriptionHtmlSimple ?? "";
+  const colors = product.Colors?.map(c => c?.ColorName).filter(Boolean).join(", ") || "—";
 
+  const original = Number(product.SuggestedRetailPrice ?? product.ListPrice ?? product.FinalPrice ?? 0);
+  const sale     = Number(product.FinalPrice ?? product.ListPrice ?? original);
+  const hasDiscount = original > 0 && sale > 0 && sale < original;
+  const pct    = hasDiscount ? Math.round((1 - sale / original) * 100) : 0;
+  const amount = hasDiscount ? +(original - sale).toFixed(2) : 0;
 
-    return `
+  return `
     <article class="product">
-         <p class="product__brand"><strong>${brand}</strong></p>
-         <h2 class="divider">${name}</h2>
+      <p class="product__brand"><strong>${brand}</strong></p>
+      <h2 class="divider">${name}</h2>
+
       <div class="product__media">
         <img class="divider" src="${img}" alt="${name}" />
       </div>
-       <p class="product__price">$${priceText}</p>
+
+      <div class="price-block">
+        <span class="price--sale">${currency.format(sale)}</span>
+        ${hasDiscount ? `<span class="price--original">${currency.format(original)}</span>` : ""}
+        ${hasDiscount ? `<span class="discount-badge"><span class="pct">-${pct}%</span><span class="save">Save ${currency.format(amount)}</span></span>` : ""}
+      </div>
+
       <div class="product__info">
-        <p class="product__color">${colorText}</p>
+        <p class="product__color">${colors}</p>
         <div class="product__desc">${desc}</div>
         <button class="btn add-to-cart" data-id="${product.Id}">Add to Cart</button>
       </div>
     </article>
   `;
 }
-
 async function init() {
     if (!productId) {
         container.innerHTML = `<p class="error">Missing product id. Try going back to the home page and clicking a product again.</p>`;
@@ -57,7 +64,6 @@ async function init() {
         }
         container.innerHTML = template(product);
 
-        // (Opcional) Log de control para depurar imagen rota
         const imgEl = qs(".product__media img", container);
         imgEl.addEventListener("error", () => {
             console.error("No se pudo cargar la imagen:", imgEl.src);

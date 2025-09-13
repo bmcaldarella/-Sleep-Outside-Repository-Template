@@ -27,14 +27,13 @@ function productCardTemplate(product) {
 
 export default class ProductList {
   constructor(category, dataSource, listElement) {
-    this.category = category;       // 'tents'
-    this.dataSource = dataSource;   // instancia de ProductData('tents')
-    this.listElement = listElement; // <ul id="product-list">
+    this.category = category;       
+    this.dataSource = dataSource;   
+    this.listElement = listElement; 
     this.products = [];
   }
 
   async init() {
-    // Tu ProductData.getData() NO recibe parámetros y devuelve el array
     this.products = await this.dataSource.getData();
     this.renderList(this.products);
   }
