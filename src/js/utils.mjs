@@ -86,3 +86,8 @@ export async function loadHeaderFooter({ afterHeaderRender, afterFooterRender } 
     console.warn("Falta #main-footer en esta página.");
   }
 }
+
+
+export function getParam(name, search = window.location.search) {
+  return new URLSearchParams(search).get(name);
+}

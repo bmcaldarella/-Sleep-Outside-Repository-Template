@@ -1,31 +1,29 @@
+// src/js/ProductData.mjs
+const baseURLRaw = import.meta.env.VITE_SERVER_URL || "";
+const baseURL = baseURLRaw.replace(/\/?$/, "/");
+
 function convertToJson(res) {
-  if (res.ok) {
-    return res.json();
-  } else {
-    throw new Error("Bad Response");
-  }
+  if (res.ok) return res.json();
+  throw new Error(`Bad Response: ${res.status} ${res.statusText}`);
 }
 
 export default class ProductData {
-  constructor(category) {
-    this.category = category;
-    // change for the correct line and src
-    this.path = `/json/${this.category}.json`;
+  constructor() {
   }
 
-  getData() {
-    return fetch(this.path)
-      .then(convertToJson)
-      .then((data) => {
-        // 
-        if (Array.isArray(data)) return data;
-        if (data && Array.isArray(data[this.category])) return data[this.category];
-        throw new Error("Unexpected JSON format in " + this.path);
-      });
+  async getData(category) {
+    if (!category) throw new Error("getData(category): category requerido");
+    const url = `${baseURL}products/search/${encodeURIComponent(category)}`;
+    const response = await fetch(url);
+    const data = await convertToJson(response);
+    return data.Result;
   }
 
   async findProductById(id) {
-    const products = await this.getData();
-    return products.find((item) => item.Id === id);
+    if (!id) throw new Error("findProductById(id): id requerido");
+    const url = `${baseURL}product/${encodeURIComponent(id)}`;
+    const response = await fetch(url);
+    const data = await convertToJson(response);
+    return data; 
   }
 }

@@ -1,49 +1,18 @@
-// /src/js/product-listing.js
 import ProductData from "./ProductData.mjs";
 import ProductList from "./ProductList.mjs";
-import { qs } from "./utils.mjs";
+import { qs, getParam, loadHeaderFooter } from "./utils.mjs";
 
-function getCategoryFromURL() {
-  const params = new URLSearchParams(location.search);
-  const raw = (params.get("category") || "").toLowerCase().trim();
+loadHeaderFooter();
 
-  const map = {
-    tents: "tents",
-    tent: "tents",
-    "sleeping-bags": "sleeping-bags",
-    sleeping: "sleeping-bags",
-    bags: "sleeping-bags",
-    backpacks: "backpacks",
-    packs: "backpacks",
-    hammocks: "hammocks",
-    hammock: "hammocks",
-  };
+const map = { tents:"tents","sleeping-bags":"sleeping-bags",backpacks:"backpacks",hammocks:"hammocks" };
+const raw = (getParam("category") || "tents").toLowerCase().trim();
+const category = map[raw] || "tents";
 
-  return map[raw] || "tents"; 
-}
+const labels = { tents:"Tents","sleeping-bags":"Sleeping Bags",backpacks:"Backpacks",hammocks:"Hammocks" };
+const h = qs("#category-title") || qs(".top-products-title") || qs("h2");
+if (h) h.textContent = `Top Products: ${labels[category] || category}`;
 
-function setCategoryTitle(category) {
-  const title = qs("#category-title");
-  if (!title) return;
-  const labelMap = {
-    tents: "Tents",
-    "sleeping-bags": "Sleeping Bags",
-    backpacks: "Backpacks",
-    hammocks: "Hammocks",
-  };
-  title.textContent = labelMap[category] || "Products";
-}
-
-function initProductListing() {
-  const listElement = qs("#product-list");
-  if (!listElement) return;
-
-  const category = getCategoryFromURL();
-  setCategoryTitle(category);
-
-  const dataSource = new ProductData(category);
-  const productList = new ProductList(category, dataSource, listElement);
-  productList.init();
-}
-
-initProductListing();
+const listEl = qs("#product-list") || qs(".product-list");
+const data = new ProductData();
+const list = new ProductList(category, data, listEl);
+list.init();
