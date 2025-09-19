@@ -1,5 +1,4 @@
-import ProductData from "./ProductData.mjs";
-import ProductList from "./ProductList.mjs";
+
 import { qs, loadHeaderFooter } from "./utils.mjs";
 
 // ---------- helpers ----------
@@ -43,13 +42,6 @@ function fixNavLinksForDepth() {
 }
 
 
-function initProductsIfPresent() {
-  const listElement = qs("#product-list");
-  if (!listElement) return; 
-  const dataSource = new ProductData("tents");
-  const productList = new ProductList("tents", dataSource, listElement);
-  productList.init();
-}
 
 function wireHamburger() {
   const header = document.getElementById("main-header");
@@ -90,7 +82,6 @@ loadHeaderFooter({
  
 });
 
-initProductsIfPresent();
 
 window.addEventListener("storage", (e) => {
   if (e.key === "so-cart") updateCartBadge();
