@@ -1,7 +1,6 @@
 // src/js/ProductList.mjs
 import { renderListWithTemplate } from "./utils.mjs";
 
-// Template de una tarjeta de producto (ajustado a tu JSON)
 function productCardTemplate(product) {
   const id = product.Id;
   const name = product.Name ?? product.NameWithoutBrand ?? "Product";
