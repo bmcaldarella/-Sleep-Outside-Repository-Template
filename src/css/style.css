@@ -70,7 +70,6 @@ img {
 #main-header .logo a{ color: inherit; text-decoration: none; }
 #main-header .highlight{ color: var(--accent); }
 
-/* Acciones a la derecha: carrito + hamburguesa */
 .header-actions{
   margin-left: auto;
   display: inline-flex;
@@ -78,7 +77,6 @@ img {
   gap: .5rem;
 }
 
-/* Carrito */
 .cart a{
   position: relative;
   display: inline-flex;
@@ -461,4 +459,25 @@ footer {
 
 @media (prefers-reduced-motion: reduce) {
   .discount-badge { transition: none; }
+}
+
+
+
+
+/* --- Controles de listado / ordenamiento --- */
+.list-controls{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  margin:.5rem 0 1rem;
+  flex-wrap:wrap;
+}
+.list-controls label{
+  font-weight:600;
+}
+.list-controls select{
+  padding:.35rem .5rem;
+  border:1px solid rgba(0,0,0,.15);
+  border-radius:.5rem;
+  background:#fff;
 }

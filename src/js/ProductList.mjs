@@ -23,6 +23,16 @@ function productCardTemplate(product) {
   `;
 }
 
+function getPrice(product) {
+  const p = product?.FinalPrice ?? product?.ListPrice ?? product?.Price ?? 0;
+  const n = typeof p === 'number' ? p : parseFloat(p);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function getName(product) {
+  return (product?.Name ?? product?.NameWithoutBrand ?? '').toString();
+}
+
 export default class ProductList {
   constructor(category, dataSource, listElement) {
     this.category = category;
@@ -41,6 +51,8 @@ export default class ProductList {
     }
   }
 
+
+
   renderList(list) {
     renderListWithTemplate(
       productCardTemplate,
@@ -50,4 +62,26 @@ export default class ProductList {
       true 
     );
   }
+ sortList(sortKey) {
+    const list = [...this.products];
+
+    switch (sortKey) {
+      case 'name-asc':
+        list.sort((a, b) => getName(a).localeCompare(getName(b)));
+        break;
+      case 'name-desc':
+        list.sort((a, b) => getName(b).localeCompare(getName(a)));
+        break;
+      case 'price-asc':
+        list.sort((a, b) => getPrice(a) - getPrice(b));
+        break;
+      case 'price-desc':
+        list.sort((a, b) => getPrice(b) - getPrice(a));
+        break;
+        
+    }
+
+    this.renderList(list);
+  }
+
 }

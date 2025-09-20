@@ -1,49 +1,35 @@
 // /src/js/ProductData.mjs
-const baseURL = (import.meta.env.VITE_SERVER_URL || "").replace(/\/?$/, "/");
+const baseURL =
+  (import.meta.env && import.meta.env.VITE_SERVER_URL) ||
+  'https://wdd330-backend.onrender.com/';
 
-function convertToJson(res) {
-  if (res.ok) return res.json();
-  throw new Error(`Bad Response: ${res.status} ${res.statusText}`);
-}
-
-async function fetchJSON(path) {
-  const res = await fetch(path);
-  if (!res.ok) throw new Error(`Local fetch failed ${res.status}`);
+async function convertToJson(res) {
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json();
 }
 
+function joinUrl(base, path) {
+  // Une respetando barras
+  const b = base.replace(/\/+$/, '');
+  const p = String(path || '').replace(/^\/+/, '');
+  return `${b}/${p}`;
+}
+
 export default class ProductData {
+  // La categoría ya NO va en el constructor
   constructor() {}
 
   async getData(category) {
-    if (baseURL) {
-      const data = await convertToJson(
-        await fetch(`${baseURL}products/search/${encodeURIComponent(category)}`)
-      );
-      return Array.isArray(data?.Result) ? data.Result : [];
-    } else {
-      const local = await fetchJSON(`/json/${category}.json`);
-      if (Array.isArray(local)) return local;
-      if (local && Array.isArray(local[category])) return local[category];
-      throw new Error("Unexpected local JSON format");
-    }
+    if (!category) throw new Error('category is required');
+    const url = joinUrl(baseURL, `products/search/${encodeURIComponent(category)}`);
+    const data = await convertToJson(await fetch(url));
+    return data.Result || [];
   }
 
   async findProductById(id) {
-    if (baseURL) {
-      return convertToJson(
-        await fetch(`${baseURL}product/${encodeURIComponent(id)}`)
-      );
-    } else {
-      const cats = ["tents", "sleeping-bags", "backpacks", "hammocks"];
-      for (const c of cats) {
-        try {
-          const list = await this.getData(c);
-          const found = list.find(p => String(p.Id) === String(id));
-          if (found) return found;
-        } catch (_) {}
-      }
-      return null;
-    }
+    if (!id) throw new Error('id is required');
+    const url = joinUrl(baseURL, `product/${encodeURIComponent(id)}`);
+    const data = await convertToJson(await fetch(url));
+    return data.Result || null;
   }
 }
