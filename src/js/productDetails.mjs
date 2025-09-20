@@ -1,27 +1,102 @@
-import { loadHeaderFooter, getParam } from "./utils.mjs";
+// /src/js/productDetails.mjs
 import ProductData from "./ProductData.mjs";
 
-loadHeaderFooter();
+const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+const qs = (sel, parent = document) => parent.querySelector(sel);
+const params = new URLSearchParams(location.search);
+// Acepta ?id=... o ?product=...
+const productId = params.get("id") || params.get("product");
+const container = qs("#product-detail");
 
-(async () => {
-  const id = getParam("id");
-  if (!id) return;
+function fixImgPath(p) {
+  if (!p) return p;
+  if (/^https?:\/\//i.test(p)) return p; // absoluta
+  if (p.startsWith("../images/")) return p.replace("../images/", "/images/");
+  if (p.startsWith("./images/"))  return p.replace("./images/", "/images/");
+  return p;
+}
 
-  const api = new ProductData();
-  const product = await api.findProductById(id);
+function template(product) {
+  const name  = product?.Name ?? product?.NameWithoutBrand ?? "Product";
+  const brand = product?.Brand?.Name ?? "—";
+  // 🔑 imágenes nuevas desde la API
+  const img   =
+    product?.Images?.PrimaryLarge ||
+    product?.Images?.PrimaryMedium ||
+    fixImgPath(product?.Image) ||
+    "images/placeholder.svg";
 
-  const img   = document.querySelector(".product-detail img");
-  const name  = document.querySelector(".product-detail .name, .product-detail h2");
-  const price = document.querySelector(".product-detail .price");
+  const desc   = product?.DescriptionHtmlSimple ?? product?.Description ?? "";
+  const colors = product?.Colors?.map(c => c?.ColorName).filter(Boolean).join(", ") || "—";
 
-  if (img) {
-    img.src = product?.Images?.PrimaryLarge || product?.Images?.PrimaryMedium || "images/placeholder.svg";
-    img.alt = product?.Name || product?.NameWithoutBrand || "Product";
+  // 🔑 precios con descuento
+  const original = Number(product?.SuggestedRetailPrice ?? product?.ListPrice ?? product?.FinalPrice ?? 0);
+  const sale     = Number(product?.FinalPrice ?? product?.ListPrice ?? original);
+  const hasDiscount = original > 0 && sale > 0 && sale < original;
+  const pct    = hasDiscount ? Math.round((1 - sale / original) * 100) : 0;
+  const amount = hasDiscount ? +(original - sale).toFixed(2) : 0;
+
+  return `
+    <article class="product">
+      <p class="product__brand"><strong>${brand}</strong></p>
+      <h2 class="divider">${name}</h2>
+
+      <div class="product__media">
+        <img class="divider" src="${img}" alt="${name}" />
+      </div>
+
+      <div class="price-block">
+        <span class="price--sale">${currency.format(sale)}</span>
+        ${hasDiscount ? `<span class="price--original">${currency.format(original)}</span>` : ""}
+        ${hasDiscount ? `<span class="discount-badge"><span class="pct">-${pct}%</span><span class="save">Save ${currency.format(amount)}</span></span>` : ""}
+      </div>
+
+      <div class="product__info">
+        <p class="product__color">${colors}</p>
+        <div class="product__desc">${desc}</div>
+        <button class="btn add-to-cart" data-id="${product.Id}">Add to Cart</button>
+      </div>
+
+    </article>
+  `;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+async function init() {
+  if (!container) return;
+
+  if (!productId) {
+    container.innerHTML = `<p class="error">Missing product id. Try going back and clicking a product again.</p>`;
+    return;
   }
-  if (name)  name.textContent  = product?.Name || product?.NameWithoutBrand || "Product";
-  if (price) {
-    const p = product?.FinalPrice ?? product?.ListPrice ?? product?.Price ?? 0;
-    const n = typeof p === "number" ? p : parseFloat(p);
-    price.textContent = `$${(Number.isFinite(n) ? n.toFixed(2) : p)}`;
+
+  try {
+    // ⚠️ Para detalle no pases categoría al constructor
+    const dataSource = new ProductData();
+    const raw = await dataSource.findProductById(productId);
+    // 🔑 Desenrollar el wrapper { Result: {...} }
+    const product = raw?.Result ?? raw;
+
+    if (!product) {
+      container.innerHTML = `<p class="error">Product not found (id: ${productId}).</p>`;
+      return;
+    }
+
+    container.innerHTML = template(product);
+
+    // fallback visual si la imagen falla
+    const imgEl = qs(".product__media img", container);
+    imgEl?.addEventListener("error", () => {
+      console.warn("No se pudo cargar la imagen:", imgEl.src);
+    });
+
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = `<p class="error">Error loading product.</p>`;
   }
-})();
+}
+
+init();
