@@ -16,14 +16,7 @@ function updateCartBadge() {
   if (badge) badge.textContent = getCartCount();
 }
 
-/**
- * Ajusta rutas según la profundidad del path actual.
- * - Reescribe hrefs del menú
- * - Corrige el logo (data-src o src)
- * - Prefija TODAS las <img> con data-src / data-srcset (hero incluido)
- */
 function fixNavLinksForDepth() {
-  // Normaliza y calcula profundidad: "/" => 1, "/carpeta/index.html" => 2, etc.
   const path = window.location.pathname.replace(/\/+$/, "");
   const segments = path.split("/").filter(Boolean);
   const depth = segments.length;
@@ -31,24 +24,21 @@ function fixNavLinksForDepth() {
 
   const prefix = (p) => {
     if (!p) return p;
-    if (/^https?:\/\//i.test(p)) return p; // URLs absolutas no se tocan
+    if (/^https?:\/\//i.test(p)) return p; 
     if (p.startsWith("./")) return up + p.slice(2);
     if (p.startsWith("/"))  return up + p.slice(1);
     return up + p;
   };
 
-  // 1) Reescribe enlaces del header
   document.querySelectorAll(".nav-home")
     .forEach(a => a.setAttribute("href", `${up}index.html`));
 
-  // Apunta al nuevo listing por defecto a tents
   document.querySelectorAll(".nav-products")
     .forEach(a => a.setAttribute("href", `${up}product_listing/index.html?category=tents`));
 
   document.querySelectorAll(".nav-cart")
     .forEach(a => a.setAttribute("href", `${up}cart/index.html`));
 
-  // 2) Logo: preferimos data-src; si no existe, intentamos arreglar el src si era absoluto
   const logo =
     document.querySelector('#main-header #logo-img') ||
     document.querySelector('header #logo-img') ||
@@ -60,15 +50,13 @@ function fixNavLinksForDepth() {
     if (data) {
       logo.src = prefix(data);
     } else {
-      const raw = logo.getAttribute("src"); // atributo original (no la URL resuelta)
+      const raw = logo.getAttribute("src"); 
       if (raw) {
-        // si venía como "/images/..." o "./images/..." lo normalizamos
         logo.setAttribute("src", prefix(raw));
       }
     }
   }
 
-  // 3) TODAS las imágenes con data-src y/o data-srcset (logo, hero, banners, etc.)
   document.querySelectorAll("img[data-src]").forEach(img => {
     const base = img.getAttribute("data-src");
     if (base) img.src = prefix(base);
@@ -109,7 +97,6 @@ function wireHamburger() {
     expanded ? close() : open();
   });
 
-  // Cierra al navegar o con Escape
   menu.querySelectorAll("a").forEach(a => a.addEventListener("click", close));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
 }
@@ -118,7 +105,7 @@ function wireHamburger() {
 loadHeaderFooter({
   afterHeaderRender() {
     updateCartBadge();
-    fixNavLinksForDepth();  // <- corrige logo/hero/links según profundidad
+    fixNavLinksForDepth();  
     wireHamburger();
   },
 });

@@ -4,13 +4,12 @@ import ProductData from "./ProductData.mjs";
 const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 const qs = (sel, parent = document) => parent.querySelector(sel);
 const params = new URLSearchParams(location.search);
-// Acepta ?id=... o ?product=...
 const productId = params.get("id") || params.get("product");
 const container = qs("#product-detail");
 
 function fixImgPath(p) {
   if (!p) return p;
-  if (/^https?:\/\//i.test(p)) return p; // absoluta
+  if (/^https?:\/\//i.test(p)) return p; 
   if (p.startsWith("../images/")) return p.replace("../images/", "/images/");
   if (p.startsWith("./images/"))  return p.replace("./images/", "/images/");
   return p;
@@ -19,7 +18,6 @@ function fixImgPath(p) {
 function template(product) {
   const name  = product?.Name ?? product?.NameWithoutBrand ?? "Product";
   const brand = product?.Brand?.Name ?? "—";
-  // 🔑 imágenes nuevas desde la API
   const img   =
     product?.Images?.PrimaryLarge ||
     product?.Images?.PrimaryMedium ||
@@ -29,7 +27,6 @@ function template(product) {
   const desc   = product?.DescriptionHtmlSimple ?? product?.Description ?? "";
   const colors = product?.Colors?.map(c => c?.ColorName).filter(Boolean).join(", ") || "—";
 
-  // 🔑 precios con descuento
   const original = Number(product?.SuggestedRetailPrice ?? product?.ListPrice ?? product?.FinalPrice ?? 0);
   const sale     = Number(product?.FinalPrice ?? product?.ListPrice ?? original);
   const hasDiscount = original > 0 && sale > 0 && sale < original;
@@ -74,10 +71,8 @@ async function init() {
   }
 
   try {
-    // ⚠️ Para detalle no pases categoría al constructor
     const dataSource = new ProductData();
     const raw = await dataSource.findProductById(productId);
-    // 🔑 Desenrollar el wrapper { Result: {...} }
     const product = raw?.Result ?? raw;
 
     if (!product) {
@@ -87,7 +82,6 @@ async function init() {
 
     container.innerHTML = template(product);
 
-    // fallback visual si la imagen falla
     const imgEl = qs(".product__media img", container);
     imgEl?.addEventListener("error", () => {
       console.warn("No se pudo cargar la imagen:", imgEl.src);

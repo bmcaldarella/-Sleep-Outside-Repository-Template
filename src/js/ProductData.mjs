@@ -15,16 +15,13 @@ async function fetchJSON(path) {
 export default class ProductData {
   constructor() {}
 
-  // Lista por categoría: API si hay baseURL, si no fallback a /json/<category>.json
   async getData(category) {
     if (baseURL) {
       const data = await convertToJson(
         await fetch(`${baseURL}products/search/${encodeURIComponent(category)}`)
       );
-      // API devuelve { Result: [...] }
       return Array.isArray(data?.Result) ? data.Result : [];
     } else {
-      // Fallback local
       const local = await fetchJSON(`/json/${category}.json`);
       if (Array.isArray(local)) return local;
       if (local && Array.isArray(local[category])) return local[category];
@@ -32,7 +29,6 @@ export default class ProductData {
     }
   }
 
-  // Detalle por id: API si hay baseURL; si no, busca en todas las categorías locales
   async findProductById(id) {
     if (baseURL) {
       return convertToJson(

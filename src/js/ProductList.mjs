@@ -4,7 +4,6 @@ import { renderListWithTemplate } from "./utils.mjs";
 function productCardTemplate(product) {
   const id    = product?.Id ?? product?.id ?? "";
   const name  = product?.Name ?? product?.NameWithoutBrand ?? "Product";
-  // API nueva: usa PrimaryMedium para el listado
   const img   = product?.Images?.PrimaryMedium ?? product?.Image ?? "images/placeholder.svg";
   const brand = product?.Brand?.Name ?? "";
 
@@ -34,12 +33,11 @@ export default class ProductList {
 
   async init() {
     try {
-      // ✅ guarda la lista en this.products
       this.products = await this.dataSource.getData(this.category);
       this.renderList(this.products);
     } catch (err) {
       console.error("Error loading products", err);
-      this.listElement.innerHTML = `<li class="error">No se pudieron cargar los productos.</li>`;
+      this.listElement.innerHTML = `<li class="error">Error</li>`;
     }
   }
 
@@ -49,7 +47,7 @@ export default class ProductList {
       this.listElement,
       list,
       "afterbegin",
-      true // limpia el contenedor antes de renderizar
+      true 
     );
   }
 }

@@ -41,13 +41,9 @@ export default class ShoppingCart {
     return items.reduce((sum, it) => sum + (Number(it.FinalPrice) || 0) * (it.quantity || 1), 0);
   }
 
-  /**
-   * Render con <template id="cart-item-template"> en el DOM
-   */
   render() {
     if (!this.listElement) return;
 
-    // limpia lista
     this.listElement.textContent = "";
 
     const items = this.getCart();
@@ -62,14 +58,12 @@ export default class ShoppingCart {
       const qty = node.querySelector(".qty");
       const btnRemove = node.querySelector(".btn-remove");
 
-      // datos
       img.src = it.Image || "/images/placeholder.png";
       img.alt = it.Name || "Product";
       name.textContent = it.Name || "Product";
       price.textContent = `$${(Number(it.FinalPrice) || 0).toFixed(2)}`;
       qty.textContent = `Qty: ${it.quantity || 1}`;
 
-      // acción
       btnRemove.addEventListener("click", () => {
         this.removeItem(it.Id);
         this.render();
