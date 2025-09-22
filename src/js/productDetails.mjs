@@ -1,37 +1,42 @@
 // /src/js/productDetails.mjs
 import ProductData from "./ProductData.mjs";
+import { addToCart, updateCartBadge } from "./cart.mjs";
 
 const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 const qs = (sel, parent = document) => parent.querySelector(sel);
+
 const params = new URLSearchParams(location.search);
 const productId = params.get("id") || params.get("product");
+
 const container = qs("#product-detail");
 
 function fixImgPath(p) {
   if (!p) return p;
-  if (/^https?:\/\//i.test(p)) return p; 
+  if (/^https?:\/\//i.test(p)) return p;
   if (p.startsWith("../images/")) return p.replace("../images/", "/images/");
-  if (p.startsWith("./images/"))  return p.replace("./images/", "/images/");
+  if (p.startsWith("./images/")) return p.replace("./images/", "/images/");
+  if (p.startsWith("images/")) return `/${p}`;
   return p;
 }
 
 function template(product) {
   const name  = product?.Name ?? product?.NameWithoutBrand ?? "Product";
   const brand = product?.Brand?.Name ?? "—";
-  const img   =
+  const img   = fixImgPath(
     product?.Images?.PrimaryLarge ||
     product?.Images?.PrimaryMedium ||
-    fixImgPath(product?.Image) ||
-    "images/placeholder.svg";
+    product?.Image ||
+    "/images/placeholder.svg"
+  );
 
   const desc   = product?.DescriptionHtmlSimple ?? product?.Description ?? "";
   const colors = product?.Colors?.map(c => c?.ColorName).filter(Boolean).join(", ") || "—";
 
-  const original = Number(product?.SuggestedRetailPrice ?? product?.ListPrice ?? product?.FinalPrice ?? 0);
-  const sale     = Number(product?.FinalPrice ?? product?.ListPrice ?? original);
+  const original   = Number(product?.SuggestedRetailPrice ?? product?.ListPrice ?? product?.FinalPrice ?? 0);
+  const sale       = Number(product?.FinalPrice ?? product?.ListPrice ?? original);
   const hasDiscount = original > 0 && sale > 0 && sale < original;
-  const pct    = hasDiscount ? Math.round((1 - sale / original) * 100) : 0;
-  const amount = hasDiscount ? +(original - sale).toFixed(2) : 0;
+  const pct        = hasDiscount ? Math.round((1 - sale / original) * 100) : 0;
+  const amount     = hasDiscount ? +(original - sale).toFixed(2) : 0;
 
   return `
     <article class="product">
@@ -51,15 +56,10 @@ function template(product) {
       <div class="product__info">
         <p class="product__color">${colors}</p>
         <div class="product__desc">${desc}</div>
-        <button class="btn add-to-cart" data-id="${product.Id}">Add to Cart</button>
+        <button class="btn add-to-cart" data-id="${product.Id ?? product.id}">Add to Cart</button>
       </div>
-
     </article>
   `;
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
 async function init() {
@@ -82,9 +82,23 @@ async function init() {
 
     container.innerHTML = template(product);
 
+    // ——— Add to Cart ———
+    const btn = container.querySelector(".add-to-cart");
+    btn?.addEventListener("click", () => {
+      addToCart(product, 1);  
+      // feedback rápido
+      const prev = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "Added ✓";
+      setTimeout(() => { btn.disabled = false; btn.textContent = prev; }, 700);
+    });
+
+    updateCartBadge();
+
     const imgEl = qs(".product__media img", container);
     imgEl?.addEventListener("error", () => {
-      console.warn("No se pudo cargar la imagen:", imgEl.src);
+      console.warn("No se pudo cargar la imagen:", imgEl?.src);
+      imgEl.src = "/images/placeholder.svg";
     });
 
   } catch (err) {

@@ -481,3 +481,162 @@ footer {
   border-radius:.5rem;
   background:#fff;
 }
+
+
+
+
+
+/* ---------- Botón general ---------- */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: #2a6ebb;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+
+.btn.primary:hover,
+.btn.primary:focus {
+  background: #1d4f88;
+}
+
+.btn.disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: default;
+}
+
+/* ---------- Layout de checkout ---------- */
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Formulario de checkout ---------- */
+#checkout-form fieldset {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+}
+
+#checkout-form legend {
+  font-weight: bold;
+  padding: 0 0.5rem;
+}
+
+#checkout-form label {
+  display: block;
+  font-weight: 600;
+  margin: 0.5rem 0 0.25rem;
+}
+
+#checkout-form input[type="text"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+#checkout-form input:invalid {
+  border-color: #e74c3c;
+}
+
+#checkout-form .error {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+/* ---------- Lista de items en checkout ---------- */
+#checkout-items {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+#checkout-items li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+#checkout-items img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+#checkout-items .cart-card__body {
+  flex: 1;
+}
+#checkout-items h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+#checkout-items p {
+  margin: 0.1rem 0;
+  font-size: 0.9rem;
+}
+
+/* ---------- Order summary ---------- */
+.order-summary {
+  list-style: none;
+  padding: 1rem;
+  margin: 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+}
+.order-summary li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  font-size: 0.95rem;
+}
+.order-summary li.total {
+  border-top: 2px solid #ccc;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* ---------- Botón Checkout dentro del carrito ---------- */
+#checkout-btn {
+  display: inline-block;
+  margin-top: 1rem;
+  background: #2a6ebb;
+  color: #fff;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.25s;
+}
+
+#checkout-btn:hover,
+#checkout-btn:focus {
+  background: #1d4f88;
+}
+
+#checkout-btn.disabled {
+  background: #999;
+  cursor: default;
+  pointer-events: none;
+}
