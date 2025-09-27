@@ -2,7 +2,7 @@ import { setLocalStorage, getLocalStorage } from "./utils.mjs";
 import { updateCartBadge } from "./cart.mjs";
 
 // Config demo
-const TAX_RATE = 0.10;
+const TAX_RATE = 0.06;
 const SHIPPING_FLAT = 9.99;
 const FREE_SHIP_MIN = 100;
 
@@ -36,7 +36,6 @@ function renderItems() {
   list.innerHTML = items.map(itemRowTemplate).join("");
 }
 
-// ==== Order summary ====
 function computeSummary() {
   const items = getLocalStorage("so-cart") || [];
   const subtotal = items.reduce((s, it) => s + (it.Price || 0) * (it.quantity || 1), 0);
@@ -54,13 +53,11 @@ function renderSummary() {
   document.getElementById("sum-total").textContent    = `$${money(total)}`;
 }
 
-// ==== Validación (no envía si falta algo) ====
 function showError(msg){ const e=document.getElementById("form-error"); if(e){ e.textContent=msg; e.style.display="block";}}
 function hideError(){ const e=document.getElementById("form-error"); if(e){ e.textContent=""; e.style.display="none";}}
 
 function validateForm(form) {
   if (!form.checkValidity()) { form.reportValidity(); return false; }
-  // extra: MM/YY no vencida
   const exp = form.exp.value.trim();
   const [mm, yy] = exp.split("/");
   if (mm && yy) {
@@ -82,7 +79,6 @@ function handleSubmit(e) {
   const form = e.currentTarget;
   if (!validateForm(form)) return;
 
-  // En un sitio real: enviar al server y validar totales en backend.
   setLocalStorage("so-cart", []);
   updateCartBadge();
   renderItems();
@@ -91,7 +87,6 @@ function handleSubmit(e) {
   alert("Order placed! (demo)");
 }
 
-// ==== Init ====
 function init() {
   renderItems();
   renderSummary();
@@ -100,11 +95,9 @@ function init() {
   const form = document.getElementById("checkout-form");
   form.addEventListener("submit", handleSubmit);
 
-  // deshabilita si el carrito está vacío
   const hasItems = (getLocalStorage("so-cart") || []).length > 0;
   document.getElementById("place-order").disabled = !hasItems;
 
-  // refresca si cambia el carrito (otra pestaña / misma pestaña)
   window.addEventListener("storage", (e) => {
     if (e.key === "so-cart") { renderItems(); renderSummary(); updateCartBadge(); }
   });
@@ -112,4 +105,33 @@ function init() {
     renderItems(); renderSummary(); updateCartBadge();
   });
 }
+
+
+
+
+    (function () {
+      const tabItems = document.getElementById('tab-items');
+      const tabForm  = document.getElementById('tab-form');
+      const panelItems = document.getElementById('panel-items');
+      const panelForm  = document.getElementById('panel-form');
+
+      function activate(tab) {
+        const isItems = tab === tabItems;
+        tabItems.setAttribute('aria-selected', isItems ? 'true' : 'false');
+        tabForm .setAttribute('aria-selected', !isItems ? 'true' : 'false');
+        panelItems.hidden = !isItems;
+        panelForm.hidden  =  isItems;
+        (isItems ? tabItems : tabForm).focus();
+      }
+      tabItems.addEventListener('click', () => activate(tabItems));
+      tabForm .addEventListener('click', () => activate(tabForm));
+
+      [tabItems, tabForm].forEach((t, i, arr) => {
+        t.addEventListener('keydown', e => {
+          if (e.key === 'ArrowRight') arr[(i+1)%arr.length].click();
+          if (e.key === 'ArrowLeft')  arr[(i-1+arr.length)%arr.length].click();
+        });
+      });
+    })();
+
 init();

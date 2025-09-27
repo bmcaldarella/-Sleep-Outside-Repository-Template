@@ -6,74 +6,84 @@
   <title>Sleep Outside | Checkout</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
+
 <body>
-  <!-- Header inyectado como en el resto del sitio -->
   <header class="divider" id="main-header"></header>
 
-  <main class="divider checkout-grid" style="display:grid; gap:1rem; grid-template-columns: 1fr 320px;">
-    <!-- Columna izquierda: Items + Form -->
-    <section aria-labelledby="checkout-title">
-      <h2 id="checkout-title">Review &amp; Place your Order</h2>
+  <main class="main-wrapper">
+    <div class="divider checkout-grid">
+      <section aria-labelledby="checkout-title">
+        <h2  class="pr-title" id="checkout-title">Review &amp; Place your Order</h2>
 
-      <!-- ✅ Lista de productos en el checkout -->
-      <h3>Your Items</h3>
-      <ul id="checkout-items" class="product-list" style="margin-bottom:1rem;"></ul>
+        <nav class="tablist" role="tablist" aria-label="Checkout views">
+          <button role="tab" id="tab-items" class="tab" aria-selected="true" aria-controls="panel-items">Your Items</button>
+          <button role="tab" id="tab-form" class="tab" aria-selected="false" aria-controls="panel-form">Checkout Form</button>
+        </nav>
 
-      <!-- ✅ Formulario requerido -->
-      <form id="checkout-form" novalidate>
-        <fieldset>
-          <legend>Customer Name</legend>
-          <label for="firstName">First Name</label>
-          <input id="firstName" name="firstName" type="text" required autocomplete="given-name" />
-          <label for="lastName">Last Name</label>
-          <input id="lastName" name="lastName" type="text" required autocomplete="family-name" />
-        </fieldset>
+        <div id="panel-items" class="tabpanel" role="tabpanel" aria-labelledby="tab-items">
+          <div class="items-header" style="display:flex;align-items:baseline;gap:.5rem;margin-bottom:.5rem;">
+            <h3>Your Items</h3>
+          </div>
+          <ul id="checkout-items" class="product-list scroll-list"></ul>
+        </div>
 
-        <fieldset>
-          <legend>Address</legend>
-          <label for="street">Street Address</label>
-          <input id="street" name="street" type="text" required autocomplete="address-line1" />
-          <label for="city">City</label>
-          <input id="city" name="city" type="text" required autocomplete="address-level2" />
-          <label for="state">State</label>
-          <input id="state" name="state" type="text" required autocomplete="address-level1" />
-          <label for="zip">Zip Code</label>
-          <input id="zip" name="zip" type="text" inputmode="numeric" pattern="\\d{5}" placeholder="12345" required autocomplete="postal-code" />
-        </fieldset>
+        <div id="panel-form" class="tabpanel" role="tabpanel" aria-labelledby="tab-form" hidden>
+          <form id="checkout-form" novalidate>
+            <fieldset>
+              <legend>Customer Name</legend>
+              <label for="firstName">First Name</label>
+              <input id="firstName" name="firstName" type="text" required autocomplete="given-name" />
+              <label for="lastName">Last Name</label>
+              <input id="lastName" name="lastName" type="text" required autocomplete="family-name" />
+            </fieldset>
 
-        <fieldset>
-          <legend>Payment</legend>
-          <label for="cc">Credit Card Number</label>
-          <input id="cc" name="cc" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="4111111111111111" pattern="\\d{13,19}" required />
-          <label for="exp">Expiration Date (MM/YY)</label>
-          <input id="exp" name="exp" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="09/27" pattern="^(0[1-9]|1[0-2])\\/\\d{2}$" required />
-          <label for="cvv">Security Code</label>
-          <input id="cvv" name="cvv" type="text" inputmode="numeric" autocomplete="cc-csc" placeholder="123" pattern="\\d{3,4}" required />
-        </fieldset>
+            <fieldset>
+              <legend>Address</legend>
+              <label for="street">Street Address</label>
+              <input id="street" name="street" type="text" required autocomplete="address-line1" />
+              <label for="city">City</label>
+              <input id="city" name="city" type="text" required autocomplete="address-level2" />
+              <label for="state">State</label>
+              <input id="state" name="state" type="text" required autocomplete="address-level1" />
+              <label for="zip">Zip Code</label>
+              <input id="zip" name="zip" type="text" inputmode="numeric" pattern="\\d{5}" placeholder="12345" required autocomplete="postal-code" />
+            </fieldset>
 
-        <!-- ✅ Botón para enviar -->
-        <button class="btn primary" type="submit" id="place-order">Checkout</button>
-        <p id="form-error" class="error" role="alert" style="display:none;margin-top:.5rem;"></p>
-      </form>
-    </section>
+            <fieldset>
+              <legend>Payment</legend>
+              <label for="cc">Credit Card Number</label>
+              <input id="cc" name="cc" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="4111111111111111" pattern="\\d{13,19}" required />
+              <label for="exp">Expiration Date (MM/YY)</label>
+              <input id="exp" name="exp" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="09/27" pattern="^(0[1-9]|1[0-2])\\/\\d{2}$" required />
+              <label for="cvv">Security Code</label>
+              <input id="cvv" name="cvv" type="text" inputmode="numeric" autocomplete="cc-csc" placeholder="123" pattern="\\d{3,4}" required />
+            </fieldset>
 
-    <!-- Columna derecha: resumen -->
-    <aside aria-labelledby="summary-title">
-      <h3 id="summary-title">Order Summary</h3>
-      <ul class="order-summary">
-        <li><span>Subtotal</span><span id="sum-subtotal">$0.00</span></li>
-        <li><span>Tax</span><span id="sum-tax">$0.00</span></li>
-        <li><span>Shipping</span><span id="sum-shipping">$0.00</span></li>
-        <li class="total"><span>Order Total</span><span id="sum-total">$0.00</span></li>
-      </ul>
-      <p class="small">On a real site the server verifies totals too.</p>
-    </aside>
+            <div class="checkout-btn">
+              <button class="btn primary" type="submit" id="place-order">Checkout</button>
+              <p id="form-error" class="error" role="alert" style="display:none;margin-top:.5rem;"></p>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <aside aria-labelledby="summary-title">
+        <h3 id="summary-title">Order Summary</h3>
+        <ul class="order-summary">
+          <li><span>Subtotal</span><span id="sum-subtotal">$0.00</span></li>
+          <li><span>Tax</span><span id="sum-tax">$0.00</span></li>
+          <li><span>Shipping</span><span id="sum-shipping">$0.00</span></li>
+          <li class="total"><span>Order Total</span><span id="sum-total">$0.00</span></li>
+        </ul>
+        <p class="small">On a real site the server verifies totals too.</p>
+      </aside>
+    </div>
   </main>
 
   <footer id="main-footer">&copy;2025 ⛺ SleepOutside — NOT a real business</footer>
 
-  <!-- Rutas relativas porque estás en /checkout/ -->
   <script type="module" src="../js/main.js"></script>
   <script type="module" src="../js/checkout.js"></script>
+
 </body>
 </html>
