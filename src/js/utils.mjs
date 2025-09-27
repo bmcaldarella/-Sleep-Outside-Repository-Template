@@ -1,15 +1,15 @@
 export function qs(selector, parent = document) {
   return parent.querySelector(selector);
 }
-// retrieve data from localstorage
+
 export function getLocalStorage(key) {
   return JSON.parse(localStorage.getItem(key));
 }
-// save data to local storage
+
 export function setLocalStorage(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
 }
-// set a listener for both touchend and click (robusto)
+
 export function setClick(selector, callback) {
   const el = qs(selector);
   if (!el) return;
@@ -24,7 +24,6 @@ export function setClick(selector, callback) {
   el.addEventListener("click", callback);
 }
 
-// ---- templating helpers ----
 export function renderListWithTemplate(
   templateFn,
   parentElement,
@@ -87,7 +86,30 @@ export async function loadHeaderFooter({ afterHeaderRender, afterFooterRender } 
   }
 }
 
-
 export function getParam(name, search = window.location.search) {
   return new URLSearchParams(search).get(name);
+}
+
+export function alertMessage(message, scroll = true) {
+  const main = document.querySelector('main') || document.body;
+
+  const old = main.querySelector('.app-alert');
+  if (old) old.remove();
+
+  let text = '';
+  if (typeof message === 'string') text = message;
+  else if (message?.message && typeof message.message === 'string') text = message.message;
+  else text = JSON.stringify(message);
+
+  const div = document.createElement('div');
+  div.className = 'app-alert';
+  div.setAttribute('role', 'alert');
+  div.innerHTML = `
+    <strong>Heads up:</strong> ${text}
+    <button type="button" class="app-alert__close" aria-label="Close">×</button>
+  `;
+  main.prepend(div);
+
+  div.querySelector('.app-alert__close')?.addEventListener('click', () => div.remove());
+  if (scroll) div.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }

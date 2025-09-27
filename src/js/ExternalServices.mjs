@@ -1,5 +1,15 @@
-// src/js/ExternalServices.mjs
 const BASE_URL = 'http://wdd330-backend.onrender.com';
+
+async function convertToJson(res) {
+  let jsonResponse = null;
+  try {
+    jsonResponse = await res.json();
+  } catch {
+    jsonResponse = { status: res.status, statusText: res.statusText };
+  }
+  if (res.ok) return jsonResponse;
+  throw { name: 'servicesError', message: jsonResponse };
+}
 
 export default class ExternalServices {
   async checkout(orderPayload) {
@@ -10,24 +20,16 @@ export default class ExternalServices {
       body: JSON.stringify(orderPayload),
     };
     const res = await fetch(url, options);
-    if (!res.ok) {
-      let detail = '';
-      try { detail = await res.text(); } catch {}
-      throw new Error(`Checkout failed: ${res.status} ${detail}`);
-    }
-    return res.json();
+    return convertToJson(res);
   }
 
-  // (Opcional) métodos previos para productos si los sigues usando
   async getData(category) {
     const res = await fetch(`${BASE_URL}/products/search/${encodeURIComponent(category)}`);
-    if (!res.ok) throw new Error('Failed to fetch products');
-    return res.json();
+    return convertToJson(res);
   }
 
   async findProductById(id) {
     const res = await fetch(`${BASE_URL}/product/${encodeURIComponent(id)}`);
-    if (!res.ok) throw new Error('Failed to fetch product');
-    return res.json();
+    return convertToJson(res);
   }
 }

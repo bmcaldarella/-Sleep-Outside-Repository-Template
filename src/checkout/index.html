@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,11 +14,13 @@
   <main class="main-wrapper">
     <div class="divider checkout-grid">
       <section aria-labelledby="checkout-title">
-        <h2  class="pr-title" id="checkout-title">Review &amp; Place your Order</h2>
+        <h2 class="pr-title" id="checkout-title">Review &amp; Place your Order</h2>
 
         <nav class="tablist" role="tablist" aria-label="Checkout views">
-          <button role="tab" id="tab-items" class="tab" aria-selected="true" aria-controls="panel-items">Your Items</button>
-          <button role="tab" id="tab-form" class="tab" aria-selected="false" aria-controls="panel-form">Checkout Form</button>
+          <button role="tab" id="tab-items" class="tab" aria-selected="true" aria-controls="panel-items">Your
+            Items</button>
+          <button role="tab" id="tab-form" class="tab" aria-selected="false" aria-controls="panel-form">Checkout
+            Form</button>
         </nav>
 
         <div id="panel-items" class="tabpanel" role="tabpanel" aria-labelledby="tab-items">
@@ -46,17 +49,21 @@
               <label for="state">State</label>
               <input id="state" name="state" type="text" required autocomplete="address-level1" />
               <label for="zip">Zip Code</label>
-              <input id="zip" name="zip" type="text" inputmode="numeric" pattern="\\d{5}" placeholder="12345" required autocomplete="postal-code" />
+              <input id="zip" name="zip" type="text" inputmode="numeric" autocomplete="postal-code" required
+                maxlength="5" pattern="\d{5}" title="Enter a 5-digit ZIP code" />
             </fieldset>
 
             <fieldset>
               <legend>Payment</legend>
               <label for="cc">Credit Card Number</label>
-              <input id="cc" name="cc" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="4111111111111111" pattern="\\d{13,19}" required />
+              <input id="cc" name="cc" type="text" inputmode="numeric" autocomplete="cc-number"
+                placeholder="4111111111111111" pattern="[0-9]{13,19}" required />
               <label for="exp">Expiration Date (MM/YY)</label>
-              <input id="exp" name="exp" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="09/27" pattern="^(0[1-9]|1[0-2])\\/\\d{2}$" required />
+              <input id="exp" name="exp" type="text" inputmode="numeric" autocomplete="cc-exp" placeholder="09/27"
+                pattern="(0[1-9]|1[0-2])/[0-9]{2}" required maxlength="5" />
               <label for="cvv">Security Code</label>
-              <input id="cvv" name="cvv" type="text" inputmode="numeric" autocomplete="cc-csc" placeholder="123" pattern="\\d{3,4}" required />
+              <input id="cvv" name="cvv" type="text" inputmode="numeric" autocomplete="cc-csc" placeholder="123"
+                pattern="[0-9]{3}" maxlength="3" required>
             </fieldset>
 
             <div class="checkout-btn">
@@ -86,4 +93,5 @@
   <script type="module" src="../js/checkout.js"></script>
 
 </body>
+
 </html>
